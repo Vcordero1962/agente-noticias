@@ -1,0 +1,1168 @@
+/* Diario de Estudio — hoja de estilos única. Sin frameworks. */
+
+:root {
+  --fondo: #0f1220;
+  --panel: #1a1f35;
+  --panel-borde: #2b3252;
+  --texto: #e8eaf6;
+  --texto-tenue: #9aa0bd;
+  --acento: #f5a524;
+  --acento-suave: rgba(245, 165, 36, 0.12);
+  --peligro: #e5484d;
+  --radio: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0 1rem 3rem;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+.cabecera {
+  text-align: center;
+  padding: 2.5rem 0 1.5rem;
+}
+
+.cabecera h1 {
+  margin: 0;
+  font-size: 1.9rem;
+}
+
+.subtitulo {
+  margin: 0.4rem 0 0;
+  color: var(--texto-tenue);
+}
+
+/* --- Rachas --- */
+
+.rachas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  max-width: 720px;
+  margin: 0 auto 2rem;
+}
+
+.tarjeta-racha {
+  background: var(--acento-suave);
+  border: 1px solid var(--panel-borde);
+  border-radius: var(--radio);
+  padding: 1.1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.racha-icono {
+  font-size: 1.6rem;
+}
+
+.racha-numero {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: var(--acento);
+  line-height: 1.1;
+}
+
+.racha-etiqueta {
+  font-size: 0.82rem;
+  color: var(--texto-tenue);
+}
+
+/* --- Paneles --- */
+
+.panel {
+  max-width: 720px;
+  margin: 0 auto 1.5rem;
+  background: var(--panel);
+  border: 1px solid var(--panel-borde);
+  border-radius: var(--radio);
+  padding: 1.3rem;
+}
+
+.panel h2 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+}
+
+.panel-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.panel-cabecera h2 {
+  margin: 0;
+}
+
+/* --- Formulario --- */
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+}
+
+.campo label {
+  font-size: 0.85rem;
+  color: var(--texto-tenue);
+}
+
+.campo input {
+  background: var(--fondo);
+  border: 1px solid var(--panel-borde);
+  border-radius: 8px;
+  color: var(--texto);
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+}
+
+.campo input:focus {
+  outline: 2px solid var(--acento);
+  outline-offset: 1px;
+}
+
+button {
+  background: var(--acento);
+  color: #241703;
+  border: 0;
+  border-radius: 8px;
+  padding: 0.6rem 1.1rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.08);
+}
+
+button.peligro {
+  background: transparent;
+  color: var(--peligro);
+  border: 1px solid var(--peligro);
+  font-weight: 500;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.8rem;
+}
+
+.error {
+  color: var(--peligro);
+  font-size: 0.88rem;
+  margin: 0.7rem 0 0;
+}
+
+/* --- Lista de sesiones --- */
+
+.vacio {
+  color: var(--texto-tenue);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.sesiones {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sesion {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.8rem;
+  background: var(--fondo);
+  border: 1px solid var(--panel-borde);
+  border-radius: 8px;
+  padding: 0.65rem 0.8rem;
+}
+
+.sesion-fecha {
+  font-variant-numeric: tabular-nums;
+  color: var(--texto-tenue);
+  font-size: 0.85rem;
+}
+
+.sesion-materia {
+  font-weight: 600;
+}
+
+.sesion-minutos {
+  color: var(--acento);
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.sesion-hoy {
+  border-color: var(--acento);
+}
+
+/* --- Respaldo --- */
+.respaldo-ayuda {
+  margin: 0 0 1rem;
+  color: var(--texto-tenue);
+  font-size: 0.9rem;
+}
+
+.respaldo-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.respaldo-acciones > button {
+  flex: 1 1 12rem;
+  min-height: 2.75rem;
+}
+
+/* --- Módulo de Noticias --- */
+.noticias-seccion {
+  margin-top: 1.5rem;
+}
+
+.subtitulo-modulo {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--texto-tenue);
+  margin-top: 0.2rem;
+}
+
+.insignia-modulo {
+  font-size: 0.75rem;
+  background: var(--acento-suave);
+  color: var(--acento);
+  border: 1px solid var(--panel-borde);
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  font-weight: 600;
+  align-self: flex-start;
+}
+
+/* --- Barra de Voz con Micrófono --- */
+.barra-voz {
+  background: rgba(245, 165, 36, 0.08);
+  border: 1px dashed var(--acento);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  margin: 1rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.btn-microfono {
+  background: #f5a524;
+  color: #0f1220;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.btn-microfono:hover {
+  transform: translateY(-1px);
+  background: #ffb84d;
+}
+
+.btn-microfono.grabando {
+  background: #e5484d;
+  color: #fff;
+  animation: pulsoVoz 1.2s infinite;
+}
+
+@keyframes pulsoVoz {
+  0% { box-shadow: 0 0 0 0 rgba(229, 72, 77, 0.6); }
+  70% { box-shadow: 0 0 0 10px rgba(229, 72, 77, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(229, 72, 77, 0); }
+}
+
+.estado-voz {
+  font-size: 0.85rem;
+  color: var(--texto-tenue);
+  flex: 1 1 14rem;
+}
+
+.temas-etiqueta {
+  font-size: 0.85rem;
+  color: var(--texto-tenue);
+  font-weight: 600;
+  margin-right: 0.2rem;
+}
+
+.btn-tema {
+  background: var(--fondo);
+  border: 1px solid var(--panel-borde);
+  color: var(--texto);
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.btn-tema:hover {
+  border-color: var(--acento);
+  color: var(--acento);
+}
+
+.formulario-noticia {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.fila-botones-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.formulario-noticia textarea {
+  width: 100%;
+  background: var(--fondo);
+  border: 1px solid var(--panel-borde);
+  border-radius: 8px;
+  color: var(--texto);
+  padding: 0.6rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.formulario-noticia textarea:focus {
+  outline: 2px solid var(--acento);
+}
+
+.lote-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.lote-cabecera h3 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.lista-noticias {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tarjeta-noticia {
+  background: var(--fondo);
+  border: 1px solid var(--panel-borde);
+  border-left: 4px solid var(--acento);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.tarjeta-noticia-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.tarjeta-noticia-titular {
+  font-weight: 600;
+  color: var(--texto);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.tarjeta-noticia-enlace {
+  color: var(--acento);
+  font-size: 0.85rem;
+  word-break: break-all;
+  text-decoration: none;
+}
+
+.tarjeta-noticia-sintesis {
+  font-size: 0.9rem;
+  color: var(--texto-tenue);
+  margin: 0.2rem 0 0;
+  line-height: 1.4;
+}
+
+.btn-eliminar-noticia {
+  background: transparent;
+  border: 1px solid var(--panel-borde);
+  color: var(--peligro);
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.acciones-noticias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.btn-accion {
+  flex: 1 1 12rem;
+  min-height: 2.75rem;
+  background: var(--acento);
+  color: #000;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0.6rem 1rem;
+  text-align: center;
+}
+
+.btn-accion.secundario {
+  background: transparent;
+  color: var(--texto);
+  border: 1px solid var(--panel-borde);
+}
+
+.btn-accion:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.btn-accion:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: none;
+}
+
+/* --- Filtro de fecha de candidatas --- */
+.filtro-fecha-candidatas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--panel-borde);
+  border-radius: 10px;
+  min-width: 0;
+}
+
+.filtro-fecha-candidatas legend {
+  padding: 0 0.3rem;
+  font-size: 0.9rem;
+  color: var(--texto-tenue);
+}
+
+.filtro-fecha-opcion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  padding: 0 0.6rem;
+  border: 1px solid var(--panel-borde);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.filtro-fecha-opcion:has(input:checked) {
+  border-color: var(--acento);
+  font-weight: 700;
+}
+
+.aviso-ventana-candidatas,
+.aviso-fuera-candidatas {
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+  color: var(--texto-tenue);
+}
+
+.aviso-ventana-candidatas[hidden],
+.aviso-fuera-candidatas[hidden],
+.sin-fecha-candidatas[hidden],
+.ocultas-seleccion[hidden] {
+  display: none;
+}
+
+.aviso-fuera-candidatas .btn-accion {
+  min-height: 44px;
+  margin-left: 0.3rem;
+}
+
+.sin-fecha-candidatas {
+  margin-top: 0.75rem;
+}
+
+.sin-fecha-candidatas summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.barra-seleccion-candidatas .ocultas-seleccion {
+  flex: 1 1 100%;
+  font-size: 0.85rem;
+  color: var(--texto-tenue);
+}
+
+/* --- Barra fija «Crear informe» --- */
+.instruccion-candidatas {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--texto);
+}
+
+.barra-seleccion-candidatas {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem -0.5rem 0;
+  padding: 0.6rem 0.75rem;
+  background: var(--panel);
+  border: 1px solid var(--acento);
+  border-radius: 10px;
+  box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.45);
+}
+
+.barra-seleccion-candidatas[hidden] {
+  display: none;
+}
+
+.barra-seleccion-candidatas .contador-seleccion {
+  flex: 1 1 100%;
+  font-weight: 700;
+  color: var(--texto);
+  font-size: 0.95rem;
+}
+
+.barra-seleccion-candidatas .btn-accion {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0.6rem 0.4rem;
+  font-size: 0.9rem;
+}
+
+.barra-seleccion-candidatas .btn-accion:disabled {
+  opacity: 1;
+  background: var(--panel-borde);
+  color: var(--texto-tenue);
+  border: 1px solid var(--panel-borde);
+}
+
+/* --- Vista previa del informe --- */
+.vista-previa-informe {
+  margin-top: 1rem;
+  padding: 0.9rem;
+  background: var(--panel);
+  border: 1px solid var(--acento);
+  border-radius: 10px;
+  overflow-wrap: anywhere;
+}
+
+.vista-previa-informe[hidden],
+.vista-previa-informe [hidden] {
+  display: none;
+}
+
+.vista-previa-titulo {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+}
+
+.vista-previa-resumen,
+.vista-previa-ocultas {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  color: var(--texto-tenue);
+}
+
+.vista-previa-lista {
+  margin: 0 0 0.75rem;
+  padding-left: 1.3rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.vista-previa-item {
+  font-size: 0.9rem;
+}
+
+.vista-previa-item .vista-previa-titular {
+  font-weight: 700;
+}
+
+.vista-previa-item .vista-previa-dato {
+  display: block;
+  color: var(--texto-tenue);
+  font-size: 0.85rem;
+}
+
+.vista-previa-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.vista-previa-acciones .btn-accion {
+  flex: 1 1 0;
+  min-width: 7rem;
+  padding: 0.6rem 0.4rem;
+  font-size: 0.9rem;
+}
+
+.vista-previa-aviso {
+  margin: 0.75rem 0 0;
+  padding: 0.5rem 0.7rem;
+  border-left: 3px solid var(--acento);
+  border-radius: 6px;
+  background: rgba(245, 165, 36, 0.08);
+  font-size: 0.9rem;
+}
+
+.mensaje-exito {
+  color: #4ade80;
+  font-size: 0.9rem;
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+/* --- Bandeja de Candidatas Verificadas --- */
+.aviso-honesto-candidatas {
+  background: rgba(245, 165, 36, 0.08);
+  border-left: 3px solid var(--acento);
+  border-radius: 6px;
+  padding: 0.65rem 0.9rem;
+  margin: 0 0 1rem;
+  font-size: 0.84rem;
+  color: var(--texto-tenue);
+  line-height: 1.45;
+}
+
+.candidatas-descartadas-aviso {
+  font-size: 0.82rem;
+  color: var(--texto-tenue);
+  margin: 0.5rem 0;
+}
+
+.candidata-label {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  cursor: pointer;
+  width: 100%;
+}
+
+.candidata-checkbox {
+  margin-top: 0.25rem;
+  transform: scale(1.25);
+  accent-color: var(--acento);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.candidata-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  color: var(--texto-tenue);
+}
+
+.candidata-badge-medio {
+  font-weight: 600;
+  color: var(--texto);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--panel-borde);
+  border-radius: 4px;
+  padding: 0.1rem 0.45rem;
+}
+
+.candidata-estado-verificacion {
+  color: #4ade80;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.candidata-sin-extracto {
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.candidata-tambien-en {
+  font-size: 0.8rem;
+  color: var(--texto-tenue);
+  border-top: 1px dashed var(--panel-borde);
+  padding-top: 0.4rem;
+  margin-top: 0.2rem;
+}
+
+.buscador-directo-movil {
+  background: var(--fondo);
+  border: 1px solid var(--panel-borde);
+  border-radius: 8px;
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.fila-buscador-directo {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.input-busqueda-directa {
+  flex: 1;
+  min-width: 200px;
+  background: var(--panel);
+  color: var(--texto);
+  border: 1px solid var(--panel-borde);
+  border-radius: 8px;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.92rem;
+}
+
+.input-busqueda-directa:focus {
+  outline: none;
+  border-color: var(--acento);
+}
+
+.estado-busqueda-directa {
+  margin: 0.45rem 0 0;
+  font-size: 0.82rem;
+  color: var(--texto-tenue);
+}
+
+/* --- Modo Reunión y Agenda Ejecutiva --- */
+.modo-reunion-seccion {
+  border-top: 3px solid var(--acento);
+}
+
+.reunion-barra-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--fondo);
+  border: 1px solid var(--panel-borde);
+  border-radius: var(--radio);
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.2rem;
+}
+
+.reunion-cronometro-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.reunion-tiempo {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--acento);
+  letter-spacing: 1px;
+}
+
+.reunion-estado-texto {
+  font-size: 0.88rem;
+  color: var(--texto-tenue);
+}
+
+.reunion-icono-pulso {
+  animation: pulso-grabando 1.2s infinite ease-in-out;
+  font-size: 1.2rem;
+}
+
+@keyframes pulso-grabando {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  50% { transform: scale(1.25); opacity: 1; filter: drop-shadow(0 0 6px #e5484d); }
+  100% { transform: scale(0.9); opacity: 0.6; }
+}
+
+.reunion-botones {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.btn-iniciar-reunion {
+  background: #10b981;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-iniciar-reunion:hover {
+  background: #059669;
+}
+
+.btn-finalizar-reunion {
+  background: var(--peligro);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  animation: pulso-borde 2s infinite ease-in-out;
+}
+
+@keyframes pulso-borde {
+  0% { box-shadow: 0 0 0 0 rgba(229, 72, 77, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(229, 72, 77, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(229, 72, 77, 0); }
+}
+
+.btn-finalizar-reunion:hover {
+  background: #c53b40;
+}
+
+.reunion-datos-form {
+  margin-bottom: 1.2rem;
+}
+
+.reunion-transcripcion-bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.reunion-transcripcion-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.reunion-transcripcion-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.82rem;
+  color: var(--texto-tenue);
+}
+
+.reunion-textarea {
+  width: 100%;
+  background: var(--fondo);
+  border: 1px solid var(--panel-borde);
+  border-radius: 8px;
+  color: var(--texto);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  padding: 0.8rem 1rem;
+  resize: vertical;
+  min-height: 120px;
+  box-sizing: border-box;
+}
+
+.reunion-textarea:focus {
+  outline: none;
+  border-color: var(--acento);
+}
+
+.reunion-resultado-acta {
+  margin-top: 1.5rem;
+  border-top: 1px dashed var(--panel-borde);
+  padding-top: 1.2rem;
+}
+
+.acta-tarjeta {
+  background: var(--fondo);
+  border: 1px solid var(--panel-borde);
+  border-left: 4px solid var(--acento);
+  border-radius: 8px;
+  padding: 1.2rem;
+}
+
+.acta-cabecera h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--texto);
+}
+
+.acta-seccion {
+  margin-top: 1rem;
+}
+
+.acta-seccion h4 {
+  margin: 0 0 0.4rem;
+  font-size: 0.95rem;
+  color: var(--acento);
+}
+
+.acta-seccion ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.acta-seccion li {
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+}
+
+.acta-editable-hint {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--texto-tenue);
+  margin-top: 0.3rem;
+}
+
+.acta-seccion li[contenteditable="true"],
+#acta-titulo-editable[contenteditable="true"] {
+  outline: none;
+  border-radius: 4px;
+  padding: 2px 4px;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.acta-seccion li[contenteditable="true"]:hover,
+#acta-titulo-editable[contenteditable="true"]:hover {
+  background: var(--acento-suave);
+  cursor: text;
+}
+
+.acta-seccion li[contenteditable="true"]:focus,
+#acta-titulo-editable[contenteditable="true"]:focus {
+  background: rgba(245, 165, 36, 0.18);
+  box-shadow: 0 0 0 1px var(--acento);
+}
+
+/* --- Banco de Temas e Historial de Agenda --- */
+.agenda-banco-temas,
+.agenda-historial-reuniones {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--panel-borde);
+  padding-top: 1.2rem;
+}
+
+.agenda-cabecera-temas,
+.agenda-cabecera-historial {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.agenda-cabecera-temas h3,
+.agenda-cabecera-historial h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--texto);
+}
+
+.fila-campos-agenda {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.8rem;
+}
+
+.fila-campos-agenda input {
+  flex: 2;
+  min-width: 220px;
+}
+
+.fila-campos-agenda select {
+  flex: 1;
+  min-width: 140px;
+  background: var(--fondo);
+  color: var(--texto);
+  border: 1px solid var(--panel-borde);
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+}
+
+.lista-temas-agenda,
+.lista-historial-reuniones {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tema-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--fondo);
+  border: 1px solid var(--panel-borde);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  gap: 0.8rem;
+}
+
+.tema-item.completado {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.tema-cuerpo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1;
+}
+
+.tema-prioridad {
+  font-size: 0.72rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tema-prioridad.alta {
+  background: rgba(229, 72, 77, 0.2);
+  color: #ff6b6b;
+  border: 1px solid #e5484d;
+}
+
+.tema-prioridad.media {
+  background: var(--acento-suave);
+  color: var(--acento);
+  border: 1px solid var(--acento);
+}
+
+.tema-prioridad.baja {
+  background: rgba(154, 160, 189, 0.15);
+  color: var(--texto-tenue);
+  border: 1px solid var(--panel-borde);
+}
+
+.tema-acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.tarjeta-reunion-historial {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--fondo);
+  border: 1px solid var(--panel-borde);
+  border-left: 3px solid var(--acento);
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.reunion-info-historial h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--texto);
+}
+
+.reunion-meta-historial {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: var(--texto-tenue);
+}
+
+.vacio-mini {
+  font-size: 0.85rem;
+  color: var(--texto-tenue);
+  padding: 0.4rem 0;
+  margin: 0;
+}
+
+/* --- Media Print para Guardar como PDF limpio en PC y Celular --- */
+@media print {
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    padding: 0 !important;
+  }
+  .cabecera, .rachas, #formulario, #form-noticia, .acciones-noticias, .lote-cabecera button, .btn-eliminar-noticia, .reunion-barra-control, .reunion-datos-form, .reunion-transcripcion-bloque, #modulo-candidatas {
+    display: none !important;
+  }
+  .panel {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+  }
+  .acta-tarjeta {
+    border: 1px solid #ccc !important;
+    border-left: 4px solid #000 !important;
+    background: #fff !important;
+    color: #000 !important;
+    page-break-inside: avoid !important;
+  }
+  .acta-cabecera h3, .acta-seccion h4, .acta-seccion li {
+    color: #000 !important;
+  }
+  #modulo-noticias {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+  }
+  .tarjeta-noticia {
+    border: 1px solid #ccc !important;
+    border-left: 4px solid #000 !important;
+    background: #fff !important;
+    color: #000 !important;
+    page-break-inside: avoid !important;
+    margin-bottom: 1rem !important;
+  }
+  .tarjeta-noticia-titular, .tarjeta-noticia-sintesis {
+    color: #000 !important;
+  }
+  .tarjeta-noticia-enlace {
+    color: #0b57d0 !important;
+  }
+}

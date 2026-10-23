@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f1220">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Agente Ejecutivo">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230f1220'/><text y='.9em' x='12' font-size='75'>📡</text></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230f1220'/><text y='.9em' x='12' font-size='75'>📡</text></svg>">
+  <title>Agente Informativo y de Gestión</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header class="cabecera">
+    <h1>📡 Agente Informativo</h1>
+    <p class="subtitulo">Monitoreo y Despacho de Noticias</p>
+  </header>
+
+  <main>
+    <!-- Módulo: Modo Reunión y Agenda Ejecutiva -->
+    <section class="panel modo-reunion-seccion" id="modulo-reunion" aria-labelledby="titulo-reunion">
+      <div class="panel-cabecera">
+        <div>
+          <h2 id="titulo-reunion">🎙️ Modo Reunión y Escucha Activa</h2>
+          <span class="subtitulo-modulo">Asistente Ejecutivo: Captura continua y análisis de acuerdos/tareas</span>
+        </div>
+        <span class="insignia-modulo" id="badge-estado-reunion">⚪ En espera</span>
+      </div>
+
+      <!-- Barra de Estado y Cronómetro -->
+      <div class="reunion-barra-control">
+        <div class="reunion-cronometro-wrap">
+          <span class="reunion-icono-pulso" id="pulso-grabando" hidden>🔴</span>
+          <span class="reunion-tiempo" id="reunion-cronometro">00:00</span>
+          <span class="reunion-estado-texto" id="reunion-estado-texto">Reunión en espera. Pulsa "Iniciar Reunión" o di "iniciar reunión".</span>
+        </div>
+
+        <div class="reunion-botones">
+          <button type="button" id="btn-iniciar-reunion" class="btn-iniciar-reunion">
+            🎙️ Iniciar Reunión
+          </button>
+          <button type="button" id="btn-finalizar-reunion" class="btn-finalizar-reunion" hidden>
+            ⏹️ Finalizar y Generar Acta
+          </button>
+          <button type="button" id="btn-cancelar-reunion" class="btn-tema" hidden>
+            ✕ Descartar
+          </button>
+        </div>
+      </div>
+
+      <!-- Datos preliminares opcionales de la reunión -->
+      <div class="reunion-datos-form" id="reunion-datos-form">
+        <div class="fila-campos">
+          <div class="campo">
+            <label for="reunion-titulo">Título o Asunto de la Reunión</label>
+            <input type="text" id="reunion-titulo" placeholder="Ej: Reunión de Coordinación Bilateral, Consejo de Dirección...">
+          </div>
+          <div class="campo">
+            <label for="reunion-participantes">Participantes (separados por coma)</label>
+            <input type="text" id="reunion-participantes" placeholder="Ej: Carlos Pérez, Ana Gómez, Director General...">
+          </div>
+        </div>
+      </div>
+
+      <!-- Transcripción en vivo en streaming -->
+      <div class="reunion-transcripcion-bloque">
+        <div class="reunion-transcripcion-cabecera">
+          <label for="reunion-transcripcion-en-vivo"><strong>Transcripción en Vivo y Notas de la Reunión:</strong></label>
+          <div class="reunion-transcripcion-meta">
+            <span id="reunion-conteo-palabras">0 palabras</span>
+            <button type="button" id="btn-limpiar-transcripcion" class="btn-tema" title="Limpiar texto">🧹 Borrar</button>
+          </div>
+        </div>
+        <textarea id="reunion-transcripcion-en-vivo" class="reunion-textarea" rows="5" placeholder="Aquí aparecerá en tiempo real todo lo que se hable en la reunión. También puedes escribir notas o pegar texto directamente aquí..."></textarea>
+        <p class="reunion-guia-voz">
+          💡 <em>Consejo de escucha activa:</em> Durante la reunión, menciona frases naturales como: <strong>"Se acuerda..."</strong>, <strong>"Acordamos..."</strong>, <strong>"Tarea para [Nombre]..."</strong>, <strong>"Necesitamos..."</strong>. El asistente las detectará y estructurará automáticamente en el informe.
+        </p>
+      </div>
+
+      <!-- Contenedor del Acta Generada -->
+      <div id="reunion-resultado-acta" class="reunion-resultado-acta" hidden></div>
+
+      <!-- Banco de Temas de Agenda para Reuniones -->
+      <div class="agenda-banco-temas" id="agenda-banco-temas">
+        <div class="agenda-cabecera-temas">
+          <div>
+            <h3>📌 Banco de Temas a Llevar a Reuniones</h3>
+            <p class="subtitulo-modulo">Apunta temas pendientes para no olvidarlos en la próxima sesión</p>
+          </div>
+          <span class="insignia-modulo" id="conteo-temas-agenda">0 temas</span>
+        </div>
+
+        <form id="form-nuevo-tema-agenda" class="form-nuevo-tema-agenda">
+          <div class="fila-campos-agenda">
+            <input type="text" id="input-nuevo-tema" placeholder="Ej: Negociación de aranceles, Revisión de plazos del proyecto..." required>
+            <select id="select-prioridad-tema" aria-label="Prioridad del tema">
+              <option value="media">Prioridad Media</option>
+              <option value="alta">Prioridad Alta 🔥</option>
+              <option value="baja">Prioridad Baja</option>
+            </select>
+            <button type="submit" id="btn-agregar-tema-agenda" class="btn-secundario">+ Añadir Tema</button>
+          </div>
+        </form>
+
+        <ul class="lista-temas-agenda" id="lista-temas-agenda">
+          <li class="vacio-mini">No hay temas pendientes en la agenda. Añade los asuntos que debes tratar.</li>
+        </ul>
+      </div>
+
+      <!-- Historial de Reuniones Previas Guardadas -->
+      <div class="agenda-historial-reuniones" id="agenda-historial-reuniones">
+        <div class="agenda-cabecera-historial">
+          <h3>📂 Historial de Reuniones Guardadas (<span id="conteo-historial-reuniones">0</span>)</h3>
+        </div>
+        <p class="vacio-mini" id="historial-reuniones-vacio">No hay actas previas guardadas en el historial local.</p>
+        <ul class="lista-historial-reuniones" id="lista-historial-reuniones"></ul>
+      </div>
+    </section>
+
+    <!-- Módulo: Agente Informativo -->
+    <section class="panel noticias-seccion" id="modulo-noticias" aria-labelledby="titulo-noticias">
+      <div class="panel-cabecera">
+        <div>
+          <h2 id="titulo-noticias">Agente Informativo</h2>
+          <span class="subtitulo-modulo">Monitoreo y Despacho de Noticias</span>
+        </div>
+        <span class="insignia-modulo">Voz + Multiplataforma</span>
+      </div>
+
+      <!-- Barra de Control por Voz del Agente -->
+      <div class="barra-voz">
+        <button type="button" id="btn-microfono" class="btn-microfono" aria-label="Activar micrófono para dar órdenes por voz">
+          <span class="icono-mic">🎙️</span> <span id="texto-btn-voz">Activar Micrófono</span>
+        </button>
+        <span id="estado-microfono" class="estado-voz" role="status" aria-live="polite">Micrófono listo. Toca para dictar el tema o una orden.</span>
+        <button type="button" id="btn-limpiar-voz" class="btn-tema" title="Borrar mensaje del micrófono" hidden>✕ Borrar aviso</button>
+      </div>
+
+      <form id="form-noticia" class="formulario-noticia" novalidate>
+        <div class="campo">
+          <label for="noticia-titular"><strong>¿Qué tema o noticia quieres explorar?</strong> (Escríbelo o díctalo por voz)</label>
+          <input type="text" id="noticia-titular" placeholder="Ej: Cumbre climática de la ONU en 2023..." required>
+        </div>
+
+        <div class="fila-campos">
+          <div class="campo">
+            <label for="noticia-fuente">Fuente o medio preferido (Opcional)</label>
+            <input type="text" id="noticia-fuente" placeholder="Ej: Granma, Reuters, Ahram Online (o deja vacío para buscar en toda la web)">
+          </div>
+          <div class="campo">
+            <label for="noticia-url">Enlace web directo (Opcional: solo si ya lo conoces)</label>
+            <input type="url" id="noticia-url" placeholder="https://... (si no lo tienes, el agente lo buscará)">
+          </div>
+        </div>
+
+        <div class="fila-botones-form">
+          <button type="button" id="btn-guardar-tema" class="btn-primario">🔎 Fijar tema y Buscar ahora en Internet</button>
+          <button type="submit" id="btn-agregar-noticia" class="btn-secundario">+ Agregar directo al despacho manual</button>
+          <button type="button" id="btn-limpiar-form-noticia" class="btn-tema">🧹 Limpiar campos</button>
+        </div>
+        <p class="error" id="error-noticia" role="alert" hidden></p>
+      </form>
+
+      <div class="lote-cabecera">
+        <h3>Despacho actual (<span id="conteo-noticias">0</span> artículos)</h3>
+        <button type="button" id="btn-limpiar-lote" class="secundario" hidden>Limpiar lote</button>
+      </div>
+      
+      <p class="vacio" id="noticias-vacio">No hay noticias en el despacho de hoy. Dicta o agrega artículos para compilar el boletín.</p>
+      <ul class="lista-noticias" id="lista-noticias"></ul>
+
+      <div class="acciones-noticias" id="acciones-noticias" hidden>
+        <button type="button" id="btn-descargar-word" class="btn-accion">📄 Descargar Informe Word (.doc)</button>
+        <button type="button" id="btn-imprimir-pdf" class="btn-accion">🖨️ Guardar PDF / Imprimir</button>
+        <button type="button" id="btn-copiar-md" class="btn-accion secundario">📋 Copiar para WhatsApp / Móvil</button>
+      </div>
+      <p class="mensaje-exito" id="exito-noticia" role="status" hidden></p>
+    </section>
+
+    <!-- Módulo: Bandeja de Candidatas (IA Autónoma + Buscador Directo Móvil) -->
+    <section class="panel" id="modulo-candidatas" aria-labelledby="titulo-candidatas">
+      <div class="panel-cabecera">
+        <div>
+          <h2 id="titulo-candidatas">Bandeja de Búsqueda Autónoma</h2>
+          <span class="subtitulo-modulo">Noticias propuestas y comprobadas contra la web real</span>
+        </div>
+        <span class="insignia-modulo" id="insignia-conteo-candidatas">0 verificadas</span>
+      </div>
+
+      <!-- Buscador en vivo desde el navegador del teléfono o PC -->
+      <div class="buscador-directo-movil" id="buscador-directo-movil">
+        <div class="fila-campos-agenda">
+          <input type="text" id="input-busqueda-directa" value="" placeholder="Ej.: economía de Brasil" aria-label="Tema para buscar en internet">
+          <button type="button" id="btn-buscar-internet-ahora" class="btn-primario">🔎 Buscar en Internet Ahora</button>
+        </div>
+        <p class="estado-voz" id="estado-busqueda-directa" role="status" aria-live="polite">
+          📱 <strong>Buscador autónomo para Celular y PC:</strong> Pulsa «🔎 Buscar en Internet Ahora» para consultar prensa internacional en vivo desde el teléfono sin depender de ninguna computadora.
+        </p>
+      </div>
+
+      <p class="aviso-honesto-candidatas" id="aviso-honesto-candidatas">
+        ℹ️ <strong>Límite honesto:</strong> Cada enlace procede de índices reales de prensa (enlaces del índice, que la app no abre uno a uno), y aunque una URL abra, eso no prueba que el hecho sea cierto. Cada dato se atribuye a su medio («según X»).
+      </p>
+
+      <p class="vacio" id="candidatas-vacio">Sin resultados: pulsa «🔎 Buscar en Internet Ahora» para consultar noticias recientes.</p>
+      <p class="candidatas-descartadas-aviso" id="candidatas-descartadas-aviso" hidden></p>
+      
+      <form id="form-candidatas">
+        <fieldset class="filtro-fecha-candidatas" id="filtro-fecha-candidatas">
+          <legend>Mostrar noticias de</legend>
+          <label class="filtro-fecha-opcion"><input type="radio" name="ventana-fecha" value="hoy"> <span data-ventana="hoy">Hoy</span></label>
+          <label class="filtro-fecha-opcion"><input type="radio" name="ventana-fecha" value="24h" checked> <span data-ventana="24h">Últimas 24 h</span></label>
+          <label class="filtro-fecha-opcion"><input type="radio" name="ventana-fecha" value="7d"> <span data-ventana="7d">7 días</span></label>
+          <label class="filtro-fecha-opcion"><input type="radio" name="ventana-fecha" value="todas"> <span data-ventana="todas">Todas</span></label>
+        </fieldset>
+        <p class="aviso-ventana-candidatas" id="aviso-ventana-candidatas" role="status" aria-live="polite" hidden></p>
+        <p class="instruccion-candidatas" id="instruccion-candidatas">Marca ☑ las noticias y pulsa «Crear informe».</p>
+        <ul class="lista-noticias" id="lista-candidatas">
+          <!-- Renderizado dinámicamente -->
+        </ul>
+        <p class="aviso-fuera-candidatas" id="aviso-fuera-candidatas" hidden>
+          <span id="texto-fuera-candidatas"></span>
+          <button type="button" id="btn-ver-todas-candidatas" class="btn-accion secundario">Ver todas</button>
+        </p>
+        <details class="sin-fecha-candidatas" id="sin-fecha-candidatas" hidden>
+          <summary id="resumen-sin-fecha-candidatas">Sin fecha fiable (0)</summary>
+          <ul class="lista-noticias" id="lista-sin-fecha-candidatas"></ul>
+        </details>
+        <div class="acciones-noticias barra-seleccion-candidatas" id="acciones-candidatas" hidden>
+          <span class="contador-seleccion" id="contador-candidatas" role="status" aria-live="polite">0 seleccionadas</span>
+          <span class="ocultas-seleccion" id="ocultas-candidatas" hidden></span>
+          <button type="submit" id="btn-informe-candidatas" class="btn-accion" disabled>📄 Crear informe</button>
+          <button type="button" id="btn-copiar-md-candidatas" class="btn-accion secundario" disabled>📋 Copiar</button>
+          <button type="button" id="btn-desmarcar-candidatas" class="btn-accion secundario">🧹 Desmarcar</button>
+        </div>
+        <p class="mensaje-exito" id="exito-candidatas" role="status" hidden></p>
+      </form>
+
+      <!-- Vista previa del informe -->
+      <section class="vista-previa-informe" id="vista-previa-informe" aria-labelledby="titulo-vista-previa" tabindex="-1" hidden>
+        <h3 class="vista-previa-titulo" id="titulo-vista-previa">Vista previa del informe</h3>
+        <p class="vista-previa-resumen" id="resumen-vista-previa"></p>
+        <p class="vista-previa-ocultas" id="ocultas-vista-previa" hidden></p>
+        <ol class="vista-previa-lista" id="lista-vista-previa"></ol>
+        <div class="vista-previa-acciones">
+          <button type="button" id="btn-descargar-vista-previa" class="btn-accion">📄 Descargar Word</button>
+          <button type="button" id="btn-copiar-vista-previa" class="btn-accion secundario">📋 Copiar</button>
+          <button type="button" id="btn-cerrar-vista-previa" class="btn-accion secundario">✖ Cerrar</button>
+        </div>
+        <p class="vista-previa-aviso" id="aviso-vista-previa" role="status" aria-live="polite" hidden></p>
+      </section>
+    </section>
+  </main>
+
+  <script src="js/diario.js"></script>
+  <script src="js/noticias.js"></script>
+  <script src="js/candidatas.js"></script>
+  <script src="js/agenda.js"></script>
+  <script src="js/agenda-ui.js"></script>
+  <script src="datos/candidatas.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/candidatas-ui.js"></script>
+</body>
+</html>
