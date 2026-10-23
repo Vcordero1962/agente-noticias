@@ -20,3 +20,5 @@ Limpiar los datos del navegador borra tus registros: exporta una copia desde la 
 ## Licencia
 
 MIT. Ver `LICENSE`.
+
+Tests: `node --test "test/**/*.test.js"`

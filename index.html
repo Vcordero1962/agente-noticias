@@ -217,7 +217,7 @@
           <label class="filtro-fecha-opcion"><input type="radio" name="ventana-fecha" value="todas"> <span data-ventana="todas">Todas</span></label>
         </fieldset>
         <p class="aviso-ventana-candidatas" id="aviso-ventana-candidatas" role="status" aria-live="polite" hidden></p>
-        <p class="instruccion-candidatas" id="instruccion-candidatas">Marca ☑ las noticias y pulsa «Crear informe».</p>
+        <p class="instruccion-candidatas" id="instruccion-candidatas">Marca ☑ las noticias; la barra de abajo crea el informe.</p>
         <ul class="lista-noticias" id="lista-candidatas">
           <!-- Renderizado dinámicamente -->
         </ul>
@@ -229,10 +229,10 @@
           <summary id="resumen-sin-fecha-candidatas">Sin fecha fiable (0)</summary>
           <ul class="lista-noticias" id="lista-sin-fecha-candidatas"></ul>
         </details>
-        <div class="acciones-noticias barra-seleccion-candidatas" id="acciones-candidatas" hidden>
-          <span class="contador-seleccion" id="contador-candidatas" role="status" aria-live="polite">0 seleccionadas</span>
+        <div class="acciones-noticias barra-seleccion-candidatas" id="acciones-candidatas">
+          <span class="contador-seleccion" id="contador-candidatas" role="status" aria-live="polite">Marca ☑ al menos una noticia para crear el informe</span>
           <span class="ocultas-seleccion" id="ocultas-candidatas" hidden></span>
-          <button type="submit" id="btn-informe-candidatas" class="btn-accion" disabled>📄 Crear informe</button>
+          <button type="submit" id="btn-informe-candidatas" class="btn-accion" disabled>📄 Crear informe (0)</button>
           <button type="button" id="btn-copiar-md-candidatas" class="btn-accion secundario" disabled>📋 Copiar</button>
           <button type="button" id="btn-desmarcar-candidatas" class="btn-accion secundario">🧹 Desmarcar</button>
         </div>

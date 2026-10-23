@@ -553,6 +553,7 @@ button.peligro {
   gap: 0.5rem;
   margin: 1rem -0.5rem 0;
   padding: 0.6rem 0.75rem;
+  padding-bottom: calc(0.6rem + env(safe-area-inset-bottom));
   background: var(--panel);
   border: 1px solid var(--acento);
   border-radius: 10px;
@@ -575,6 +576,16 @@ button.peligro {
   min-width: 0;
   padding: 0.6rem 0.4rem;
   font-size: 0.9rem;
+}
+
+#btn-informe-candidatas {
+  min-height: 48px;
+}
+
+@media (max-width: 399px) {
+  #btn-informe-candidatas {
+    flex: 2 1 100%;
+  }
 }
 
 .barra-seleccion-candidatas .btn-accion:disabled {

@@ -48,15 +48,38 @@ function cargarCandidatasCombinadas() {
     desdeMovil = [];
   }
 
+  // Lo guardado en el móvil lo trajeron los mapeadores sin abrir la URL: se muestra como
+  // «no comprobado» aunque se guardara con 'ok' (vista derivada; el almacén no se reescribe).
+  desdeMovil = desdeMovil.map(derivarDeAlmacenMovil);
+
   // Combinar sin duplicar por URL
   const vistas = new Set();
   const combinadas = [];
   for (const c of [...desdeMovil, ...desdeArchivo]) {
     if (!c || !c.url || vistas.has(c.url)) continue;
     vistas.add(c.url);
-    combinadas.push(c);
+    const dia = abiertasEnSesion.get(c.id || c.url);
+    combinadas.push(dia && !c.abiertaPorUsuariaEn ? { ...c, abiertaPorUsuariaEn: dia } : c);
   }
   return combinadas;
+}
+
+// Candidatas cuyo enlace abrió la usuaria en esta sesión (id → YYYY-MM-DD local).
+const abiertasEnSesion = new Map();
+
+// Guarda abiertaPorUsuariaEn (campo aditivo) en diario-candidatas-movil:v1 si la candidata está allí.
+function registrarAperturaCandidata(id) {
+  const dia = hoyISO();
+  abiertasEnSesion.set(id, dia);
+  try {
+    const crudo = localStorage.getItem(CLAVE_CANDIDATAS_MOVIL);
+    const guardadas = crudo ? JSON.parse(crudo) : null;
+    if (!Array.isArray(guardadas) || !guardadas.some((g) => g && (g.id === id || (!g.id && g.url === id)))) return;
+    localStorage.setItem(CLAVE_CANDIDATAS_MOVIL, JSON.stringify(marcarAbiertaPorUsuaria(guardadas, id, dia)));
+  } catch {
+    mostrarExitoCandidatas('No se pudo guardar que abriste esta fuente (almacenamiento del navegador lleno o bloqueado).');
+  }
+  return dia;
 }
 
 function mostrarExitoCandidatas(mensaje) {
@@ -90,21 +113,22 @@ function marcarCandidataPorNumero(numero) {
 function actualizarBotonCandidatas() {
   const idsVisibles = candidatasVisibles.map((c) => c.id);
   const { total, ocultas } = resumenSeleccion(candidatasOrdenadas, Array.from(idsMarcadosCandidatas), idsVisibles);
-  const deshabilitar = total === 0;
+  const { mensaje, habilitado } = textoBarraSeleccion(total, ocultas);
+  const deshabilitar = !habilitado;
   const spanOcultas = document.getElementById('ocultas-candidatas');
   if (spanOcultas) {
-    spanOcultas.textContent = `(${ocultas} oculta${ocultas === 1 ? '' : 's'} por el filtro)`;
-    spanOcultas.hidden = ocultas === 0;
+    spanOcultas.hidden = true; // el aviso de ocultas va dentro del mensaje de la barra
   }
   if (accionesCandidatas) {
-    accionesCandidatas.hidden = deshabilitar;
+    accionesCandidatas.hidden = candidatasOrdenadas.length === 0;
   }
   const contador = document.getElementById('contador-candidatas');
   if (contador) {
-    contador.textContent = `${total} seleccionada${total === 1 ? '' : 's'}`;
+    contador.textContent = mensaje;
   }
   if (btnInformeCandidatas) {
     btnInformeCandidatas.disabled = deshabilitar;
+    btnInformeCandidatas.textContent = `📄 Crear informe (${total})`;
   }
   if (btnCopiarMdCandidatas) {
     btnCopiarMdCandidatas.disabled = deshabilitar;
@@ -233,7 +257,9 @@ if (listaCandidatas) {
     candidatasOrdenadas = ordenarCandidatas(validas);
 
     if (insigniaConteoCandidatas) {
-      insigniaConteoCandidatas.textContent = `${candidatasOrdenadas.length} verificada${candidatasOrdenadas.length === 1 ? '' : 's'}`;
+      const nVerificadas = candidatasOrdenadas.filter((c) => estadoVisible(c) === 'verificada').length;
+      const nTotal = candidatasOrdenadas.length;
+      insigniaConteoCandidatas.textContent = `${nTotal} candidata${nTotal === 1 ? '' : 's'} (${nVerificadas} verificada${nVerificadas === 1 ? '' : 's'})`;
     }
 
     if (candidatasDescartadasAviso) {
@@ -262,8 +288,12 @@ if (listaCandidatas) {
   const filtroFecha = document.getElementById('filtro-fecha-candidatas');
 
   function pintarBandejaCandidatas() {
-    const { dentro, sinFecha, fuera, conteos } = clasificarPorFecha(candidatasOrdenadas, ventanaFecha, Date.now());
-    candidatasVisibles = [...dentro, ...sinFecha];
+    const ahora = Date.now();
+    const { visibles, fuera, sinFecha } = filtrarPorVentana(candidatasOrdenadas, ventanaFecha, ahora);
+    const { conteos } = clasificarPorFecha(candidatasOrdenadas, ventanaFecha, ahora);
+    const verTodas = ventanaFecha === 'todas';
+    const dentro = verTodas ? visibles.slice(0, visibles.length - sinFecha.length) : visibles;
+    candidatasVisibles = visibles;
 
     filtroFecha.querySelectorAll('input[name="ventana-fecha"]').forEach((radio) => {
       radio.checked = radio.value === ventanaFecha;
@@ -286,12 +316,18 @@ if (listaCandidatas) {
     dentro.forEach((c, i) => listaCandidatas.appendChild(crearTarjetaCandidata(c, i + 1)));
 
     listaSinFecha.textContent = '';
-    sinFecha.forEach((c, i) => listaSinFecha.appendChild(crearTarjetaCandidata(c, dentro.length + i + 1)));
+    if (verTodas) {
+      sinFecha.forEach((c, i) => listaSinFecha.appendChild(crearTarjetaCandidata(c, dentro.length + i + 1)));
+    }
     resumenSinFecha.textContent = `Sin fecha fiable (${sinFecha.length})`;
-    detallesSinFecha.hidden = sinFecha.length === 0;
+    detallesSinFecha.hidden = !verTodas || sinFecha.length === 0;
 
-    textoFuera.textContent = `${fuera.length} más ${fuera.length === 1 ? 'antigua oculta' : 'antiguas ocultas'} por este filtro ·`;
-    avisoFuera.hidden = fuera.length === 0;
+    const partes = [];
+    if (fuera.length > 0) partes.push(`${fuera.length} más ${fuera.length === 1 ? 'antigua' : 'antiguas'}`);
+    if (!verTodas && sinFecha.length > 0) partes.push(`${sinFecha.length} sin fecha`);
+    const nOcultas = fuera.length + (verTodas ? 0 : sinFecha.length);
+    textoFuera.textContent = `${partes.join(' y ')} ${nOcultas === 1 ? 'oculta' : 'ocultas'} ·`;
+    avisoFuera.hidden = nOcultas === 0;
 
     actualizarBotonCandidatas();
   }
@@ -348,12 +384,10 @@ if (listaCandidatas) {
       meta.appendChild(badgeMedio);
 
       const textoFecha = textoFechaPublicacion(c);
-      if (textoFecha) {
-        const spanFecha = document.createElement('span');
-        spanFecha.className = 'candidata-fecha';
-        spanFecha.textContent = `Publicación: ${textoFecha}`;
-        meta.appendChild(spanFecha);
-      }
+      const spanFecha = document.createElement('span');
+      spanFecha.className = 'candidata-fecha';
+      spanFecha.textContent = `Publicación: ${textoFecha || 'fecha sin confirmar'}`;
+      meta.appendChild(spanFecha);
 
       const numFuentes = contarFuentes(c);
       if (numFuentes > 1) {
@@ -363,10 +397,17 @@ if (listaCandidatas) {
         meta.appendChild(badgeFuentes);
       }
 
-      const fechaComprobacion = formatearFechaLocal(c.verificacion.comprobadaEn);
       const badgeVerificacion = document.createElement('span');
       badgeVerificacion.className = 'candidata-estado-verificacion';
-      badgeVerificacion.textContent = `🔗 Enlace comprobado (${fechaComprobacion})`;
+      const pintarEstado = () => {
+        const estado = estadoVisible(c);
+        badgeVerificacion.textContent = estado === 'verificada'
+          ? `🔗 Enlace comprobado (${formatearFechaLocal(c.verificacion.comprobadaEn)})`
+          : (estado === 'abierta-por-usuaria'
+            ? `👁️ no comprobado · abierta por ti (${c.abiertaPorUsuariaEn})`
+            : '⚠️ no comprobado');
+      };
+      pintarEstado();
       meta.appendChild(badgeVerificacion);
 
       // Enlace clicable a la URL final comprobada
@@ -377,6 +418,15 @@ if (listaCandidatas) {
       enlace.target = '_blank';
       enlace.rel = 'noopener noreferrer';
       enlace.textContent = urlFinal;
+      if (c.verificacion.estado !== 'ok') {
+        const alAbrir = () => {
+          const dia = registrarAperturaCandidata(c.id);
+          if (dia) c.abiertaPorUsuariaEn = dia;
+          pintarEstado();
+        };
+        enlace.addEventListener('click', alAbrir);
+        enlace.addEventListener('auxclick', alAbrir);
+      }
 
       li.append(cabecera, meta, enlace);
 
@@ -469,12 +519,14 @@ if (listaCandidatas) {
       const li = document.createElement('li');
       li.className = 'vista-previa-item';
       const urlFinal = (c.verificacion && c.verificacion.urlFinal) || c.url;
-      const comprobada = c.verificacion ? formatearFechaLocal(c.verificacion.comprobadaEn) : '';
+      const comprobada = estadoVisible(c) === 'verificada' && c.verificacion
+        ? formatearFechaLocal(c.verificacion.comprobadaEn)
+        : '';
       li.appendChild(lineaVistaPrevia('vista-previa-titular', c.titular));
       li.appendChild(lineaVistaPrevia('vista-previa-dato', `Medio: ${c.medio}`));
       li.appendChild(lineaVistaPrevia('vista-previa-dato', `URL: ${urlFinal}`));
-      li.appendChild(lineaVistaPrevia('vista-previa-dato', `Publicada: ${c.fechaPublicacion || 'sin fecha'}`));
-      li.appendChild(lineaVistaPrevia('vista-previa-dato', `Comprobada: ${comprobada || 'sin fecha'}`));
+      li.appendChild(lineaVistaPrevia('vista-previa-dato', `Publicación: ${textoFechaPublicacion(c) || 'fecha sin confirmar'}`));
+      li.appendChild(lineaVistaPrevia('vista-previa-dato', `Comprobada: ${comprobada || 'no comprobada'}`));
       listaVistaPrevia.appendChild(li);
     });
 

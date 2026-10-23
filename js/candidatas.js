@@ -8,6 +8,9 @@
  * (docs/constitution.md, "Prohibido inventar").
  */
 
+// 'ok' = comprobada por tools/agente-noticias/verificar.js; 'no-comprobado' = nadie abrió la URL.
+const ESTADOS_VERIFICACION = Object.freeze(['ok', 'no-comprobado']);
+
 function esTextoNoVacio(valor) {
   return typeof valor === 'string' && valor.trim() !== '';
 }
@@ -51,7 +54,9 @@ function validarCandidata(candidata) {
   if (!v || typeof v !== 'object') {
     motivos.push('No consta la verificación de la URL.');
   } else {
-    if (v.estado !== 'ok') motivos.push('La verificación de la URL no tiene estado "ok".');
+    if (!ESTADOS_VERIFICACION.includes(v.estado)) {
+      motivos.push('La verificación de la URL no tiene estado "ok" ni "no-comprobado".');
+    }
     if (!esUrlHttp(v.urlFinal)) motivos.push('La verificación no registra la URL final.');
     if (!esTextoNoVacio(v.tituloPagina)) motivos.push('La verificación no registra el título de la página.');
     if (typeof v.comprobadaEn !== 'number' || !Number.isFinite(v.comprobadaEn)) {
@@ -67,6 +72,11 @@ function validarCandidata(candidata) {
   const traeInstante = candidata.publicadaEn !== undefined && candidata.publicadaEn !== null;
   if (traeInstante && !(typeof candidata.publicadaEn === 'number' && Number.isFinite(candidata.publicadaEn))) {
     motivos.push('La fecha de publicación (instante) no es un número válido.');
+  }
+
+  const traeApertura = candidata.abiertaPorUsuariaEn !== undefined && candidata.abiertaPorUsuariaEn !== null;
+  if (traeApertura && !esFechaISO(candidata.abiertaPorUsuariaEn)) {
+    motivos.push('La fecha en que la usuaria abrió la fuente no es una fecha válida YYYY-MM-DD.');
   }
 
   if (motivos.length > 0) return { valida: false, motivos };
@@ -91,8 +101,44 @@ function validarCandidata(candidata) {
   };
   if (traeFecha) limpia.fechaPublicacion = candidata.fechaPublicacion;
   if (traeInstante) limpia.publicadaEn = candidata.publicadaEn;
+  if (traeApertura) limpia.abiertaPorUsuariaEn = candidata.abiertaPorUsuariaEn;
 
   return { valida: true, motivos: [], limpia };
+}
+
+/**
+ * Estado que se muestra a la usuaria: 'verificada' (estado "ok", comprobada por
+ * verificar.js), 'abierta-por-usuaria' (no comprobada, pero ella abrió la fuente) o
+ * 'no-comprobado'. Es una vista derivada: no cambia lo guardado.
+ */
+function estadoVisible(candidata) {
+  const estado = candidata && candidata.verificacion && candidata.verificacion.estado;
+  if (estado === 'ok') return 'verificada';
+  if (candidata && esFechaISO(candidata.abiertaPorUsuariaEn)) return 'abierta-por-usuaria';
+  return 'no-comprobado';
+}
+
+/**
+ * Vista de una candidata guardada en diario-candidatas-movil:v1: todo lo que hay allí lo
+ * produjeron los mapeadores del navegador sin abrir la URL, aunque antiguamente se guardara
+ * con "ok". Devuelve una copia con "no-comprobado"; no muta ni reescribe el almacén.
+ */
+function derivarDeAlmacenMovil(candidata) {
+  if (!candidata || typeof candidata !== 'object' || !candidata.verificacion
+      || typeof candidata.verificacion !== 'object') return candidata;
+  return { ...candidata, verificacion: { ...candidata.verificacion, estado: 'no-comprobado' } };
+}
+
+/**
+ * Devuelve una copia de la lista con `abiertaPorUsuariaEn` (YYYY-MM-DD local) en la
+ * candidata cuyo id (o url) coincide. Campo aditivo: no toca el resto de campos.
+ */
+function marcarAbiertaPorUsuaria(lista, id, dia) {
+  if (!Array.isArray(lista)) return [];
+  if (!esFechaISO(dia)) return lista;
+  return lista.map((c) => (c && typeof c === 'object' && (c.id === id || (!c.id && c.url === id))
+    ? { ...c, abiertaPorUsuariaEn: dia }
+    : c));
 }
 
 /**
@@ -131,9 +177,10 @@ function contarFuentes(candidata) {
 }
 
 /**
- * Ordena por número de medios distintos (desc), luego por fecha (más reciente primero;
- * sin fecha al final) y, en empate, conserva el orden de entrada. No muta la entrada
- * ni añade campos: no afirma ninguna "repercusión" que no pueda demostrar.
+ * Orden estricto (spec 002 RF1): día de publicación (desc; sin fecha al final), luego
+ * `publicadaEn` (desc), luego número de medios distintos (desc) y, en empate, orden de
+ * entrada. No muta la entrada ni añade campos: no afirma ninguna "repercusión" que no
+ * pueda demostrar.
  */
 function ordenarCandidatas(lista) {
   if (!Array.isArray(lista)) return [];
@@ -143,14 +190,14 @@ function ordenarCandidatas(lista) {
   return lista
     .map((candidata, indice) => ({ candidata, indice }))
     .sort((a, b) => {
-      const porFuentes = contarFuentes(b.candidata) - contarFuentes(a.candidata);
-      if (porFuentes !== 0) return porFuentes;
       const fa = fechaDe(a.candidata);
       const fb = fechaDe(b.candidata);
       if (fa !== fb) return fa < fb ? 1 : -1;
       const ia = instanteDe(a.candidata);
       const ib = instanteDe(b.candidata);
       if (ia !== ib) return ib - ia;
+      const porFuentes = contarFuentes(b.candidata) - contarFuentes(a.candidata);
+      if (porFuentes !== 0) return porFuentes;
       return a.indice - b.indice;
     })
     .map((o) => o.candidata);
@@ -245,6 +292,25 @@ function clasificarPorFecha(lista, ventana, ahora) {
 }
 
 /**
+ * Aplica la ventana de fecha a la bandeja (RF2). Devuelve `{ visibles, fuera, sinFecha, conteos }`.
+ * En hoy/24h/7d `visibles` son solo las que caen dentro y las sin fecha NO se ven. En `todas`
+ * (o ventana desconocida) `visibles` = dentro + sin fecha, estas al final, y `fuera` queda vacío.
+ * `sinFecha` lista siempre las candidatas sin fecha fiable. No muta la entrada; `ahora` (ms) es
+ * parámetro y las fechas son locales.
+ */
+function filtrarPorVentana(lista, ventana, ahora) {
+  const r = clasificarPorFecha(lista, ventana, ahora);
+  const verTodo = !VENTANAS_FECHA.includes(ventana) || ventana === 'todas';
+  const visibles = verTodo ? [...r.dentro, ...r.sinFecha] : r.dentro;
+  return {
+    visibles,
+    fuera: r.fuera,
+    sinFecha: r.sinFecha,
+    conteos: { visibles: visibles.length, fuera: r.fuera.length, sinFecha: r.sinFecha.length },
+  };
+}
+
+/**
  * Adapta una lista de candidatas verificadas al formato que espera compilarBoletin.
  * Atribuye cada dato al medio ("Según X") e incluye medio, URL final y fecha de comprobación.
  * Revalida cada candidata para que ninguna sin verificar llegue al boletín.
@@ -262,19 +328,28 @@ function adaptarParaBoletin(lista) {
     const textoPublicacion = c.fechaPublicacion
       ? `publicada ${c.fechaPublicacion}`
       : 'sin fecha de publicación';
+    const verificada = c.verificacion.estado === 'ok';
+    const textoComprobacion = verificada
+      ? `comprobado el ${fechaComprobacion}`
+      : (c.abiertaPorUsuariaEn
+        ? `sin comprobar; fuente abierta por la usuaria el ${c.abiertaPorUsuariaEn}`
+        : 'sin comprobar');
 
     const fuentesExtra = c.tambienEn.length > 0
       ? ` | También recogido en: ${c.tambienEn.map((o) => `${o.medio} (${o.url})`).join(', ')}`
       : '';
 
+    const sinExtracto = verificada
+      ? `Sin extracto confirmado en la página (enlace comprobado en ${c.medio} el ${fechaComprobacion}).`
+      : `Sin extracto confirmado en la página (enlace sin comprobar de ${c.medio}).`;
     const sintesis = c.extracto
       ? `Según ${c.medio}: «${c.extracto}»${fuentesExtra}`
-      : `Sin extracto confirmado en la página (enlace comprobado en ${c.medio} el ${fechaComprobacion}).${fuentesExtra}`;
+      : `${sinExtracto}${fuentesExtra}`;
 
     adaptadas.push({
       titular: c.titular,
       url: urlFinal,
-      categoria: `Según ${c.medio} (comprobado el ${fechaComprobacion}; ${textoPublicacion})`,
+      categoria: `Según ${c.medio} (${textoComprobacion}; ${textoPublicacion})`,
       sintesis,
     });
   }
@@ -293,6 +368,21 @@ function resumenSeleccion(lista, idsMarcados, idsVisibles) {
   const visibles = new Set(Array.isArray(idsVisibles) ? idsVisibles.filter(esTextoNoVacio).map((id) => id.trim()) : []);
   const ocultas = elegidas.filter((e) => !visibles.has(e.id)).length;
   return { total: elegidas.length, ocultas };
+}
+
+/**
+ * Mensaje de la barra del informe y si el botón se habilita. Pura.
+ * @returns {{ mensaje: string, habilitado: boolean }}
+ */
+function textoBarraSeleccion(total, ocultas) {
+  if (!(total > 0)) {
+    return { mensaje: 'Marca ☑ al menos una noticia para crear el informe', habilitado: false };
+  }
+  let mensaje = total === 1 ? '1 noticia marcada' : `${total} noticias marcadas`;
+  if (ocultas > 0) {
+    mensaje += ` (${ocultas} oculta${ocultas === 1 ? '' : 's'} por el filtro)`;
+  }
+  return { mensaje, habilitado: true };
 }
 
 /**
@@ -511,7 +601,7 @@ function mapearArticulosGdelt(articulos, ahora = Date.now()) {
       url,
       extracto: '',
       verificacion: {
-        estado: 'ok',
+        estado: 'no-comprobado',
         urlFinal: url,
         tituloPagina: titular,
         comprobadaEn: ahoraEf,
@@ -582,7 +672,7 @@ function mapearItemsRss(items, medioPorDefecto = 'Prensa internacional', temaFil
       url,
       extracto: descLimpia.slice(0, 280),
       verificacion: {
-        estado: 'ok',
+        estado: 'no-comprobado',
         urlFinal: url,
         tituloPagina: titular,
         comprobadaEn: ahoraEf,
