@@ -16,3 +16,7 @@ Aplicación web, sin servidor ni instalación, para:
 
 Todos los datos viven solo en tu navegador (`localStorage`). No usa claves de API ni backend.
 Limpiar los datos del navegador borra tus registros: exporta una copia desde la propia app.
+
+## Licencia
+
+MIT. Ver `LICENSE`.
