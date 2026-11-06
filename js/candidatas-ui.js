@@ -486,7 +486,7 @@ if (listaCandidatas) {
   function construirBoletinCandidatas(elegidas) {
     return compilarBoletin(adaptarParaBoletin(elegidas), {
       fecha: hoyISO(),
-      titulo: `Informe de Noticias Verificadas - ${hoyISO()}`,
+      titulo: tituloInforme(elegidas, hoyISO()),
     });
   }
 
@@ -555,7 +555,7 @@ if (listaCandidatas) {
     const url = URL.createObjectURL(blob);
     const enlace = document.createElement('a');
     enlace.href = url;
-    enlace.download = `Informe-Noticias-Verificadas-${boletin.fecha}.doc`;
+    enlace.download = nombreArchivoInforme(elegidasVistaPrevia, boletin.fecha);
     document.body.appendChild(enlace);
     enlace.click();
     document.body.removeChild(enlace);

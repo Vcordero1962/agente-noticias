@@ -118,6 +118,27 @@ function estadoVisible(candidata) {
   return 'no-comprobado';
 }
 
+/** Cuántas de las candidatas dadas no tienen el enlace comprobado de verdad (estado distinto de "ok"). */
+function contarSinComprobar(lista) {
+  if (!Array.isArray(lista)) return 0;
+  return lista.filter((c) => c && typeof c === 'object' && estadoVisible(c) !== 'verificada').length;
+}
+
+/** Título del informe: «Verificadas» solo si todas las elegidas se comprobaron de verdad. */
+function tituloInforme(elegidas, fecha) {
+  const k = contarSinComprobar(elegidas);
+  return k === 0
+    ? `Informe de Noticias Verificadas - ${fecha}`
+    : `Informe de Noticias - ${fecha} (${k} con enlace sin comprobar)`;
+}
+
+/** Nombre del fichero Word: lleva «Verificadas» solo si todas las elegidas se comprobaron. */
+function nombreArchivoInforme(elegidas, fecha) {
+  return contarSinComprobar(elegidas) === 0
+    ? `Informe-Noticias-Verificadas-${fecha}.doc`
+    : `Informe-Noticias-${fecha}.doc`;
+}
+
 /**
  * Vista de una candidata guardada en diario-candidatas-movil:v1: todo lo que hay allí lo
  * produjeron los mapeadores del navegador sin abrir la URL, aunque antiguamente se guardara
